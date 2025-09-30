@@ -6,6 +6,6 @@
 #define LEXEME_SIZE 20
 
 void lexer();
-void read_file(FILE *fp);
+char *read_file(FILE *fp);
 
 #endif // ndef __LEXER__
