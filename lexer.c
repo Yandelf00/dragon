@@ -48,39 +48,53 @@ typedef struct {
 void lexer()
 {
 	FILE *fp;
-	char *source;
+	TokenArray *token_array;
+	Source *source;
+	char *s;
 	fp = fopen("text.txt", "r");
 
 	if (fp == NULL){
-		printf("cannot read the file\n");
+		// printf("cannot read the file\n");
+		perror("couldn't read the file\n");
+		exit(1);
 	} else {
-		// read_file(fp);
-		source = read_file(fp);
+		s = file_to_source(fp);
+		source->source = s;
+		source->current = &s[0];
+		source->start = &s[0];
+		source->line = 1;
 	}
 
 	fclose(fp);
 }
 
-char *read_file(FILE *fp){
+char *file_to_source(FILE *fp){
+	int n = 128;
 	int c;
-	Token t;
-	TokenArray *t_array = malloc(128 * sizeof(Token));
-	char *s = malloc(128 * sizeof(char));
+	char *s = malloc(n * sizeof(char));
 	int i = 0;
 
 	while((c = getc(fp)) != EOF) {
 		printf("%c", c);
+		if(i >= n){
+			n = i + 128;
+			char *b = realloc(s, n*sizeof(char));
+			if(!b){
+				perror("error reallocating");
+				exit(1);
+			}
+			s = b;
+		}
 		s[i] = c;
 		i++;
-		// if(c != ' '){
-		// 	printf("%c", c);
-		// } else {
-		// 	printf("\n");
-		// }
 	}
-	for(int j = 0; j < i ; j++){
-		printf("%c\n", s[j]);
-	}
-	printf("%lu\n", sizeof(s));
+	
 	return s;
 }
+
+void scan_token(Source *source, TokenArray *token_array){
+	
+}
+
+
+
