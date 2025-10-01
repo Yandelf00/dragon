@@ -5,6 +5,7 @@
 int main()
 {
 	lexer();
+	fscanf(stdin, "c");
 	return 0;
 }
 
