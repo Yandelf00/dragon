@@ -8,7 +8,7 @@
 void lexer()
 {
 	FILE *fp;
-	TokenArray *token_array;
+	TokenArray *token_array = malloc(sizeof(TokenArray));
 	Source *source;
 	char *s;
 	fp = fopen("test.txt", "r");
@@ -25,7 +25,9 @@ void lexer()
 		// source->line = 1;
 		le_scan(source, token_array);
 	}
-
+	free(token_array);
+	free(source->source);
+	free(source);
 	fclose(fp);
 }
 
@@ -68,7 +70,7 @@ void le_scan(Source *source, TokenArray *token_array){
 	int size_of_source = sizeof(source->source);
 	
 	for(int i=0; i < size; i++){
-		printf("%c\n", t[i]);
+		printf("%c", t[i]);
 	}
 	
 	// for( ; *t != '\0'; t++){

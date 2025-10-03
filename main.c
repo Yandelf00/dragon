@@ -4,8 +4,9 @@
 
 int main()
 {
+	int c;
 	lexer();
-	fscanf(stdin, "c");
+	scanf("%d", &c);
 	return 0;
 }
 
