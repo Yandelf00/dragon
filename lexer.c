@@ -10,20 +10,14 @@ void lexer()
 	FILE *fp;
 	TokenArray *token_array = malloc(sizeof(TokenArray));
 	Source *source;
-	char *s;
 	fp = fopen("test.txt", "r");
 
 	if (fp == NULL){
-		// printf("cannot read the file\n");
 		perror("couldn't read the file\n");
 		exit(1);
 	} else {
 		source = file_to_source(fp);
-		// source->source = s;
-		// source->current = &s[0];
-		// source->start = &s[0];
-		// source->line = 1;
-		le_scan(source, token_array);
+		scanner(source, token_array);
 	}
 	free(token_array);
 	free(source->source);
@@ -31,6 +25,8 @@ void lexer()
 	fclose(fp);
 }
 
+// This function is responsible for taking the content
+// of the file and putting it in a source structure.
 Source *file_to_source(FILE *fp){
 	Source *src = malloc(sizeof(Source));
 	int n = 128;
@@ -63,23 +59,19 @@ Source *file_to_source(FILE *fp){
 	return src;
 }
 
-void le_scan(Source *source, TokenArray *token_array){
+// This function is responsible for scanning the source
+// structure and filling the token array with tokens
+void scanner(Source *source, TokenArray *token_array){
 	char *t = source->source;
-	size_t size = strlen(t);
-	// int size = 0;
-	int size_of_source = sizeof(source->source);
+	// size_t size = strlen(t);
+	printf("%d\n", source->source_size);
+	int j = 0;
 	
-	for(int i=0; i < size; i++){
-		printf("%c", t[i]);
+	//TODO : implement the scan token function 
+	while(t[j] != '\0'){
+		printf("%c", t[j]);
+		j++;
 	}
-	
-	// for( ; *t != '\0'; t++){
-	// 	size++;
-	// }
-	// printf("%d\n", size);
-
-
-	// printf("%d\n", size);
 }
 
 

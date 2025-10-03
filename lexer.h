@@ -49,7 +49,7 @@ typedef struct {
 
 void lexer();
 Source *file_to_source(FILE *fp);
-void le_scan(Source *source, TokenArray *token_array);
+void scanner(Source *source, TokenArray *token_array);
 
 
 #endif // ndef __LEXER__
