@@ -29,27 +29,29 @@ typedef enum ttype{
 // informations about every token.
 typedef struct {
 	Ttype token_type;
-	char lexeme[LEXEME_SIZE];
+	char *lexeme;
 	int line;
 } Token;
 
 typedef struct {
-	Token *data;
+	Token *tokens;
 	size_t count;
 	size_t capacity;
 } TokenArray;
 
 typedef struct {
 	char *source; // pointer to the source text
-	char *current; // pointer to the current character of the string 
-	char *start; // point to the character in the start of the string
-	int line; // current line we are in
 	int source_size;
 } Source;
 
 void lexer();
 Source *file_to_source(FILE *fp);
 void scanner(Source *source, TokenArray *token_array);
+int is_at_end(int current, int length);
+void initialize_token(TokenArray *token_array);
+void add_token(TokenArray *token_array, Token token);
+void free_token_array(TokenArray *token_array);
+char *my_stdrup(const char *s);
 
 
 #endif // ndef __LEXER__
