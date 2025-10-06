@@ -1,5 +1,4 @@
 #include "lexer.h"
-// #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -11,7 +10,7 @@ void lexer()
 	TokenArray *token_array = malloc(sizeof(TokenArray));
 	Source *source;
 
-	initialize_token(token_array);
+	initialize_token_array(token_array);
 	fp = fopen("test.txt", "r");
 
 	if (fp == NULL){
@@ -21,7 +20,15 @@ void lexer()
 		source = file_to_source(fp);
 		scanner(source, token_array);
 	}
-	free_token_array(token_array);
+
+	for(int x=0; x < token_array->count; x++) {
+		printf("%u\n", token_array->tokens[x].token_type);
+	}
+
+	//this actually is going to free
+	//the content of token_array
+	free_token_array(token_array); 
+	//this frees token_array
 	free(token_array);
 	free(source->source);
 	free(source);
@@ -54,9 +61,6 @@ Source *file_to_source(FILE *fp){
 	s[i] = '\0';
 
 	src->source = s;
-	// src->current= &s[0];
-	// src->start= &s[0];
-	// src->line= 0;
 	src->source_size= i;
 
 	return src;
@@ -65,7 +69,6 @@ Source *file_to_source(FILE *fp){
 // This function is responsible for scanning the source
 // structure and filling the token array with tokens
 void scanner(Source *source, TokenArray *token_array){
-	// Token *token = malloc(sizeof(Token));
 	char *src= source->source;
 	int source_size = source->source_size;
 	int start = 0;
@@ -80,38 +83,67 @@ void scanner(Source *source, TokenArray *token_array){
 		switch (current_char) {
 			case '(' : {
 				Token token;
-				token.token_type = LEFT_BRACE;
-				token.lexeme = my_stdrup("(");
-				token.line = line;
+				initialize_token(&token, LEFT_PAREN, "(", line);
 				add_token(token_array, token);
 				break;
 			}
 			case ')' : {
 				Token token;
-				token.token_type = RIGHT_BRACE;
-				token.lexeme = my_stdrup(")");
-				token.line = line;
+				initialize_token(&token, RIGHT_PAREN, ")", line);
+				add_token(token_array, token);
+				break;
+			}
+			case '{' : {
+				Token token;
+				initialize_token(&token, RIGHT_BRACE, "{", line);
+				add_token(token_array, token);
+				break;
+			}
+			case '}' : {
+				Token token;
+				initialize_token(&token, LEFT_BRACE, "}", line);
+				add_token(token_array, token);
+				break;
+			}
+			case ',' : {
+				Token token;
+				initialize_token(&token, COMMA, ",", line);
+				add_token(token_array, token);
+				break;
+			}
+			case '.' : {
+				Token token;
+				initialize_token(&token, DOT, ".", line);
+				add_token(token_array, token);
+				break;
+			}
+			case '-' : {
+				Token token;
+				initialize_token(&token, MINUS, "-", line);
+				add_token(token_array, token);
+				break;
+			}
+			case '+' : {
+				Token token;
+				initialize_token(&token, PLUS, "+", line);
+				add_token(token_array, token);
+				break;
+			}
+			case ';' : {
+				Token token;
+				initialize_token(&token, SEMICOLON, ";", line);
+				add_token(token_array, token);
+				break;
+			}
+			case '*' : {
+				Token token;
+				initialize_token(&token, STAR, "*", line);
 				add_token(token_array, token);
 				break;
 			}
 		}
-
 	}
-	// int j = 0;
-	
-	//TODO : implement the scan token function 
-	// while(!is_at_end(source->current, source->source_size)){
-	// 	printf("somehting " );
-	// }
-
-	// int j = 0;
-	//
-	// while(src[j] != '\0'){
-	// 	printf("%c", src[j]);
-	// 	j++;
-	// }
 }
-
 
 
 // Helper functions here
@@ -121,13 +153,19 @@ int is_at_end(int current, int length){
 	return current >= length; 
 }
 
-void initialize_token(TokenArray *token_array)
+void initialize_token_array(TokenArray *token_array)
 {
 	token_array->count = 0;
 	token_array->capacity = 100;
 	token_array->tokens = malloc(token_array->capacity * sizeof(Token));
 }
 
+void initialize_token(Token *token, Ttype token_type, const char *s, int line)
+{
+	token->token_type = token_type;
+	token->lexeme = my_stdrup(s);
+	token->line = line;
+}
 
 void add_token(TokenArray *token_array, Token token)
 {
@@ -152,11 +190,10 @@ char *my_stdrup(const char *s)
 	return dup;
 }
 
-
-
 void free_token_array(TokenArray *token_array){
 	for(int i = 0; i < token_array->count; i++) {
 		free(token_array->tokens[i].lexeme);
 	}
 	free(token_array->tokens);
 }
+
