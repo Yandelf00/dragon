@@ -79,7 +79,7 @@ void scanner(Source *source, TokenArray *token_array){
 	while(!is_at_end(current, source_size))
 	{
 		start = current;
-		current_char = src[current++];
+		current_char = src[current++];//sets the current char then adds one to current
 		switch (current_char) {
 			case '(' : {
 				Token token;
@@ -141,6 +141,9 @@ void scanner(Source *source, TokenArray *token_array){
 				add_token(token_array, token);
 				break;
 			}
+			default:
+				fprintf(stderr, "Unexpected character\n");
+				exit(1);
 		}
 	}
 }
