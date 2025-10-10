@@ -141,6 +141,15 @@ void scanner(Source *source, TokenArray *token_array){
 				add_token(token_array, token);
 				break;
 			}
+			case '!' : {
+				Token token;
+				if(src[current] == "=") {
+					initialize_token(&token, BANG_EQUAL, "!=", line);
+				} else {
+					initialize_token(&token, BANG, "!", line);
+				}
+				break;
+			}
 			default:
 				fprintf(stderr, "Unexpected character\n");
 				exit(1);
@@ -198,5 +207,9 @@ void free_token_array(TokenArray *token_array){
 		free(token_array->tokens[i].lexeme);
 	}
 	free(token_array->tokens);
+}
+
+bool match(char c, int current_length, int src_size) {
+	
 }
 
