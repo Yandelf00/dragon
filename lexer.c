@@ -61,7 +61,7 @@ Source *file_to_source(FILE *fp){
 	s[i] = '\0';
 
 	src->source = s;
-	src->source_size= i;
+	src->source_size = i;
 
 	return src;
 }
@@ -76,95 +76,111 @@ void scanner(Source *source, TokenArray *token_array){
 	int line = 1;
 	char current_char;
 
-	while(!is_at_end(current, source_size))
+	while(current < source_size)
 	{
 		start = current;
 		current_char = src[current++];//sets the current char then adds one to current
 		switch (current_char) {
 			case '(' : {
-				Token token;
-				initialize_token(&token, LEFT_PAREN, "(", line);
-				add_token(token_array, token);
+				token_to_array(token_array, LEFT_PAREN, "(", line);
 				break;
 			}
 			case ')' : {
-				Token token;
-				initialize_token(&token, RIGHT_PAREN, ")", line);
-				add_token(token_array, token);
+				token_to_array(token_array, RIGHT_PAREN, ")", line);
 				break;
 			}
 			case '{' : {
-				Token token;
-				initialize_token(&token, RIGHT_BRACE, "{", line);
-				add_token(token_array, token);
+				token_to_array(token_array, LEFT_BRACE, "{", line);
 				break;
 			}
 			case '}' : {
-				Token token;
-				initialize_token(&token, LEFT_BRACE, "}", line);
-				add_token(token_array, token);
+				token_to_array(token_array, RIGHT_BRACE, "}", line);
 				break;
 			}
 			case ',' : {
-				Token token;
-				initialize_token(&token, COMMA, ",", line);
-				add_token(token_array, token);
+				token_to_array(token_array, COMMA, ",", line);
 				break;
 			}
 			case '.' : {
-				Token token;
-				initialize_token(&token, DOT, ".", line);
-				add_token(token_array, token);
+				token_to_array(token_array, DOT, ".", line);
 				break;
 			}
 			case '-' : {
-				Token token;
-				initialize_token(&token, MINUS, "-", line);
-				add_token(token_array, token);
+				token_to_array(token_array, MINUS, "-", line);
 				break;
 			}
 			case '+' : {
-				Token token;
-				initialize_token(&token, PLUS, "+", line);
-				add_token(token_array, token);
+				token_to_array(token_array, PLUS, "+", line);
 				break;
 			}
 			case ';' : {
-				Token token;
-				initialize_token(&token, SEMICOLON, ";", line);
-				add_token(token_array, token);
+				token_to_array(token_array, SEMICOLON, ";", line);
 				break;
 			}
 			case '*' : {
-				Token token;
-				initialize_token(&token, STAR, "*", line);
-				add_token(token_array, token);
+				token_to_array(token_array, STAR, "*", line);
 				break;
 			}
 			case '!' : {
-				Token token;
-				if(src[current] == "=") {
-					initialize_token(&token, BANG_EQUAL, "!=", line);
+				if(src[current] == '=') {
+					token_to_array(token_array, BANG_EQUAL, "!=", line);
+					current++;
 				} else {
-					initialize_token(&token, BANG, "!", line);
+					token_to_array(token_array, BANG, "!", line);
 				}
 				break;
 			}
-			default:
-				fprintf(stderr, "Unexpected character\n");
-				exit(1);
+			case '=' : {
+				if(src[current] == '=') {
+					token_to_array(token_array, EQUAL_EQUAL, "==", line);
+					current++;
+				} else {
+					token_to_array(token_array, EQUAL, "=", line);
+				}
+				break;
+			}
+			case '<' : {
+				if(src[current] == '=') {
+					token_to_array(token_array, LESS_EQUAL, "<=", line);
+					current++;
+				} else {
+					token_to_array(token_array, LESS, "<", line);
+				}
+				break;
+			}
+			case '>' : {
+				if(src[current] == '=') {
+					token_to_array(token_array, GREATER_EQUAL, ">=", line);
+					current++;
+				} else {
+					token_to_array(token_array, GREATER, ">", line);
+				}
+				break;
+			}
+
+
+			default:{
+				if(current_char != '\n' && current_char != ' ' && current_char != '\t') {
+					fprintf(stderr, "Unexpected character: %c\n", current_char);
+					exit(1);
+				}
+				break;
+			}
 		}
 	}
 }
 
 
-// Helper functions here
-// returns TRUE is we are at the end of the array
-// returns FALSE if not
+// ----------------Helper functions----------------
+//
+// returns TRUE(1) is we are at the end of the array
+// returns FALSE(0) if not
 int is_at_end(int current, int length){
 	return current >= length; 
 }
 
+// This function's purpose is to initialize the 
+// token array that gonna contain all our tokens
 void initialize_token_array(TokenArray *token_array)
 {
 	token_array->count = 0;
@@ -172,6 +188,9 @@ void initialize_token_array(TokenArray *token_array)
 	token_array->tokens = malloc(token_array->capacity * sizeof(Token));
 }
 
+// This functions's purpose is to initialize our tokens,
+// we need to provide informations such as token type, lexeme
+// and line.
 void initialize_token(Token *token, Ttype token_type, const char *s, int line)
 {
 	token->token_type = token_type;
@@ -179,7 +198,9 @@ void initialize_token(Token *token, Ttype token_type, const char *s, int line)
 	token->line = line;
 }
 
-void add_token(TokenArray *token_array, Token token)
+// This function's purpose is to add our token to our token
+// array
+void add_token_to_array(TokenArray *token_array, Token token)
 {
 	if(token_array->count >= token_array->capacity){
 		token_array->capacity *= 2;
@@ -194,6 +215,23 @@ void add_token(TokenArray *token_array, Token token)
 	token_array->tokens[token_array->count++] = token;
 }
 
+// This function is a helper function that basically takes care
+// of the initialization of our token and then adding it to the token
+// array.
+void token_to_array(TokenArray *token_array, Ttype token_type, const char *s, int line)
+{
+	Token token;
+	initialize_token(&token, token_type, s, line);
+	add_token_to_array(token_array, token);
+}
+
+
+// This function's purpose is to make a copy of a string
+// so that i can keep using that string even if it's freed.
+// If i don't use it, then my token arrays will point at a
+// certain character, but once its freed i will have no lexeme
+// in my token. This function is used in the initialize_token 
+// function.
 char *my_stdrup(const char *s)
 {
 	size_t len = strlen(s)+1;
@@ -202,6 +240,8 @@ char *my_stdrup(const char *s)
 	return dup;
 }
 
+// This function takes care of freeing our token array
+// avoiding memory leaks
 void free_token_array(TokenArray *token_array){
 	for(int i = 0; i < token_array->count; i++) {
 		free(token_array->tokens[i].lexeme);
@@ -209,7 +249,6 @@ void free_token_array(TokenArray *token_array){
 	free(token_array->tokens);
 }
 
-bool match(char c, int current_length, int src_size) {
-	
-}
+
+
 
