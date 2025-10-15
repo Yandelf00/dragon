@@ -157,7 +157,23 @@ void scanner(Source *source, TokenArray *token_array){
 				}
 				break;
 			}
-
+			case '/' : {
+				if(src[current] == '/') {
+					while (src[current] != '\n' && current < source_size) {
+						current++;
+					}
+				} else {
+					token_to_array(token_array, SLASH, "/", line); 
+				}
+				break;
+			}
+			case ' ': break;
+			case '\r': break;
+			case '\t': break;
+			case '\n' : {
+				line++;
+				break;
+			}
 
 			default:{
 				if(current_char != '\n' && current_char != ' ' && current_char != '\t') {
