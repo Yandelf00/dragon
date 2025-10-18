@@ -174,6 +174,24 @@ void scanner(Source *source, TokenArray *token_array){
 				line++;
 				break;
 			}
+			case '"' : {
+				while(src[current] != '"' && current < source_size){
+					if(src[current] == '\n') {
+						line++;
+					}
+					current++;
+				}
+
+				if(current >= source_size){
+					perror("Unterminated string.");
+					exit(1);
+				}
+
+				current++;
+				
+
+				break;
+			}
 
 			default:{
 				if(current_char != '\n' && current_char != ' ' && current_char != '\t') {
