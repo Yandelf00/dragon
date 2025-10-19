@@ -54,6 +54,8 @@ void add_token_to_array(TokenArray *token_array, Token token);
 void initialize_token(Token *token, Ttype token_type, const char *s, int line);
 void free_token_array(TokenArray *token_array);
 char *my_stdrup(const char *s);
+int is_alpha(char cc);
+int is_alpha_numerical(char cc);
 
 
 #endif // ndef __LEXER__

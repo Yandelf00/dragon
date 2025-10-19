@@ -175,11 +175,14 @@ void scanner(Source *source, TokenArray *token_array){
 				break;
 			}
 			case '"' : {
+				int cmpt = 0;
+				char *holder;
 				while(src[current] != '"' && current < source_size){
 					if(src[current] == '\n') {
 						line++;
 					}
 					current++;
+					cmpt++;
 				}
 
 				if(current >= source_size){
@@ -188,13 +191,57 @@ void scanner(Source *source, TokenArray *token_array){
 				}
 
 				current++;
-				
 
+				holder = malloc(sizeof(char) * cmpt);
+				for(int i = 0; i < cmpt; i++) {
+					holder[i] = src[start+i+1];
+				}
+
+				token_to_array(token_array, STRING, holder, line); 
+				free(holder);
 				break;
 			}
 
 			default:{
-				if(current_char != '\n' && current_char != ' ' && current_char != '\t') {
+				int cmpt = 0;
+				char *holder;
+				if(current_char >= '0' && current_char <= '9'){
+					while(src[current] >= '0' && src[current] <= '9'){
+						current++;
+						cmpt++;
+					}
+					holder = malloc(sizeof(char) * cmpt);
+					for(int i = 0; i <= cmpt; i++) {
+						holder[i] = src[start + i];
+					}
+					token_to_array(token_array, NUMBER, holder, line); 
+					free(holder);
+				} else if (is_alpha(current_char)) {
+					while(is_alpha_numerical(src[current])){
+						current++;
+						cmpt++;
+					}
+					holder = malloc(sizeof(char) * cmpt);
+					for(int i = 0; i <= cmpt; i++) {
+						holder[i] = src[start + i];
+					}
+					if(strcmp("or", holder) == 0){
+						token_to_array(token_array, OR, holder, line); 
+					} else if (strcmp("if", holder) == 0){
+						token_to_array(token_array, IF, holder, line); 
+					} else if (strcmp("else", holder) == 0){
+						token_to_array(token_array, ELSE, holder, line); 
+					} else if (strcmp("and", holder) == 0){
+						token_to_array(token_array, AND, holder, line); 
+					} else if (strcmp("false", holder) == 0){
+						token_to_array(token_array, FALSE, holder, line); 
+					} else if (strcmp("true", holder) == 0){
+						token_to_array(token_array, TRUE, holder, line); 
+					} else if (strcmp("while", holder) == 0){
+						token_to_array(token_array, WHILE, holder, line); 
+					} 
+					free(holder);
+				} else {
 					fprintf(stderr, "Unexpected character: %c\n", current_char);
 					exit(1);
 				}
@@ -245,7 +292,6 @@ void add_token_to_array(TokenArray *token_array, Token token)
 		} 
 	}
 
-	printf("xxddd\n");
 	token_array->tokens[token_array->count++] = token;
 }
 
@@ -278,10 +324,21 @@ char *my_stdrup(const char *s)
 // avoiding memory leaks
 void free_token_array(TokenArray *token_array){
 	for(int i = 0; i < token_array->count; i++) {
+		printf("freeing the lexeme %s\n", token_array->tokens[i].lexeme);
 		free(token_array->tokens[i].lexeme);
 	}
 	free(token_array->tokens);
 }
+
+int is_alpha(char cc){
+	return (cc >= 'a' && cc<='z') || (cc >= 'A' && cc <= 'Z') || cc == '_';
+}
+
+int is_alpha_numerical(char cc) {
+	return is_alpha(cc) || (cc >= '0' && cc <= '9');
+}
+
+
 
 
 
