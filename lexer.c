@@ -7,6 +7,9 @@
 void lexer()
 {
 	FILE *fp;
+  //this is the array that is going to contain 
+  //all our tokens
+  //TODO : return to main so it can be parsed
 	TokenArray *token_array = malloc(sizeof(TokenArray));
 	Source *source;
 
@@ -337,9 +340,4 @@ int is_alpha(char cc){
 int is_alpha_numerical(char cc) {
 	return is_alpha(cc) || (cc >= '0' && cc <= '9');
 }
-
-
-
-
-
 
