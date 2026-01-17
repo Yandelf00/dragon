@@ -1,10 +1,11 @@
 #include "lexer.h"
+#include "structs.h"
 #include <stdio.h>
 #include <string.h>
 
 
 // here starts our lexer.
-void lexer()
+TokenArray *lexer()
 {
 	FILE *fp;
   //this is the array that is going to contain 
@@ -30,12 +31,13 @@ void lexer()
 
 	//this actually is going to free
 	//the content of token_array
-	free_token_array(token_array); 
+	// free_token_array(token_array); 
 	//this frees token_array
-	free(token_array);
+	// free(token_array);
 	free(source->source);
 	free(source);
 	fclose(fp);
+  return token_array;
 }
 
 // This function is responsible for taking the content
@@ -120,6 +122,10 @@ void scanner(Source *source, TokenArray *token_array){
 				token_to_array(token_array, SEMICOLON, ";", line);
 				break;
 			}
+      case ':' : {
+				token_to_array(token_array, COLON, ":", line);
+				break;
+			}
 			case '*' : {
 				token_to_array(token_array, STAR, "*", line);
 				break;
@@ -200,7 +206,7 @@ void scanner(Source *source, TokenArray *token_array){
 					holder[i] = src[start+i+1];
 				}
 
-				token_to_array(token_array, STRING, holder, line); 
+				token_to_array(token_array, STRING_LITERAL, holder, line); 
 				free(holder);
 				break;
 			}
@@ -228,20 +234,36 @@ void scanner(Source *source, TokenArray *token_array){
 					for(int i = 0; i <= cmpt; i++) {
 						holder[i] = src[start + i];
 					}
-					if(strcmp("or", holder) == 0){
-						token_to_array(token_array, OR, holder, line); 
-					} else if (strcmp("if", holder) == 0){
+					if(strcmp("if", holder) == 0){
 						token_to_array(token_array, IF, holder, line); 
 					} else if (strcmp("else", holder) == 0){
 						token_to_array(token_array, ELSE, holder, line); 
-					} else if (strcmp("and", holder) == 0){
-						token_to_array(token_array, AND, holder, line); 
 					} else if (strcmp("false", holder) == 0){
 						token_to_array(token_array, FALSE, holder, line); 
 					} else if (strcmp("true", holder) == 0){
 						token_to_array(token_array, TRUE, holder, line); 
 					} else if (strcmp("while", holder) == 0){
 						token_to_array(token_array, WHILE, holder, line); 
+					} else if (strcmp("function", holder) == 0){
+						token_to_array(token_array, FUNCTION, holder, line); 
+					} else if (strcmp("for", holder) == 0){
+						token_to_array(token_array, FOR, holder, line); 
+					} else if (strcmp("print", holder) == 0){
+						token_to_array(token_array, PRINT, holder, line); 
+					} else if (strcmp("return", holder) == 0){
+						token_to_array(token_array, RETURN, holder, line); 
+					} else if (strcmp("char", holder) == 0){
+						token_to_array(token_array, CHAR, holder, line); 
+					} else if (strcmp("string", holder) == 0){
+						token_to_array(token_array, STRING, holder, line); 
+					} else if (strcmp("boolean", holder) == 0){
+						token_to_array(token_array, BOOLEAN, holder, line); 
+					} else if (strcmp("integer", holder) == 0){
+						token_to_array(token_array, INTEGER, holder, line); 
+					} else if (strcmp("array", holder) == 0){
+						token_to_array(token_array, ARRAY, holder, line); 
+					} else if (strcmp("void", holder) == 0){
+						token_to_array(token_array, VOID, holder, line); 
 					} 
 					free(holder);
 				} else {
